@@ -11,12 +11,13 @@ import static org.junit.Assert.assertNotNull;
 public class InfinispanContainerIntegrationTest {
 
   @ClassRule
-  public static InfinispanContainer infinispan = InfinispanContainerFactory
-      .standalone("9.1.3.Final")
-      .configurationFile("infinispan-standalone.xml")
-      .expose()
-      .hotrod()
-      .build();
+  public static InfinispanContainer infinispan =
+      InfinispanContainerFactory
+          .standalone("9.1.3.Final")
+          .configurationFile("infinispan-standalone.xml")
+          .expose()
+          .hotrod()
+          .build();
 
   @Test
   public void rule_should_have_mapped_hotrod_port() {
