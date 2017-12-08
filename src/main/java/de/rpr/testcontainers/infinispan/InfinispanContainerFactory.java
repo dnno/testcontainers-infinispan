@@ -91,7 +91,7 @@ public class InfinispanContainerFactory
 
   @Override
   public InfinispanContainer build() {
-    return waitingFor(new LogMessageWaitStrategy().withRegEx(".*HotRodServer listening.*\\s"));
+    return waitingFor(new LogMessageWaitStrategy().withRegEx(".*Infinispan Server.*started in.*\\s"));
   }
 
 }
