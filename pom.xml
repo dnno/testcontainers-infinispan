@@ -30,7 +30,6 @@
       <groupId>org.infinispan</groupId>
       <artifactId>infinispan-client-hotrod</artifactId>
       <version>${infinispan.version}</version>
-      <scope>test</scope>
     </dependency>
   </dependencies>
 

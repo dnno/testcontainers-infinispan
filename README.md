@@ -9,14 +9,17 @@ At the moment this is a rudimentary implementation and by no means complete. Fee
 
 # Usage
 
-For general usage info on Testcontainers please look at the examples of the project.
+Here's simple example how you can use the `InfinispanContainer`.
 
 ```
 @ClassRule
-public static InfinispanContainer infinispan = InfinispanContainerFactory
-      .standalone("9.1.3.Final")
-      .configurationFile("infinispan-standalone.xml")
-      .expose()
-      .hotrod()
-      .build();
+public static InfinispanContainer infinispan = new InfinispanContainer()
+          .withProtocolVersion(ProtocolVersion.PROTOCOL_VERSION_26)
+          .withCaches("testCache");
 ```
+If you want, you can retrieve a `RemoteCacheManager` from the container:
+```
+infinispan.getCacheManager()
+```
+
+For general usage info on Testcontainers please look at the examples of the project.
