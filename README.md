@@ -5,7 +5,10 @@ for a few different docker containers that you might want to use during integrat
 use a generic container to launch other images. This repository contains an implementation of a container
 for the Infinispan cache server. It provides an API that is aimed to help you configure the container.
 
-At the moment this is a rudimentary implementation and by no means complete. Feel free to suggest changes!
+At the moment this is a rudimentary implementation and by no means complete. It only supports the [Hotrod protocol](http://infinispan.org/docs/stable/user_guide/user_guide.html#hot_rod_protocol)
+to connect to the Infinispan server, for example.
+
+Feel free to suggest changes!
 
 # Usage
 
