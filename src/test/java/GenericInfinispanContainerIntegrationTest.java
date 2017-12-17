@@ -10,10 +10,7 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.LogMessageWaitStrategy;
 
 import java.time.Duration;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -23,7 +20,7 @@ public class GenericInfinispanContainerIntegrationTest {
   RemoteCacheManager cacheManager;
 
   @ClassRule
-  public static GenericContainer container =
+  public static GenericContainer infinispan =
       new GenericContainer("jboss/infinispan-server:9.1.3.Final")
           .waitingFor(new LogMessageWaitStrategy().withRegEx(".*Infinispan Server.*started in.*\\s"))
           .withStartupTimeout(Duration.ofMillis(20000))
@@ -48,11 +45,12 @@ public class GenericInfinispanContainerIntegrationTest {
   }
 
   @Test
-  public void should_be_able_to_retrieve_a_configured_cache() {
-    assertNotNull(cacheManager.getCache("testCache"));
+  public void should_be_able_to_retrieve_a_configured_cache() throws Exception {
+    Future<RemoteCache<Object, Object>> result = executorService.submit(() -> cacheManager.getCache("testCache"));
+    assertNotNull(result.get(1500, TimeUnit.MILLISECONDS));
   }
 
   private String getServerAddress() {
-    return container.getContainerIpAddress() + ":" + container.getMappedPort(11222);
+    return infinispan.getContainerIpAddress() + ":" + infinispan.getMappedPort(11222);
   }
 }
