@@ -8,8 +8,8 @@ import static org.junit.Assert.assertNotNull;
 public class Infinispan91xContainerIntegrationTest {
 
   @ClassRule
-  public static InfinispanContainer infinispan = new InfinispanContainer("jboss/infinispan-server:9.1.4.Final")
-          .withProtocolVersion(ProtocolVersion.PROTOCOL_VERSION_26)
+  public static InfinispanContainer infinispan = new InfinispanContainer("jboss/infinispan-server:9.1.3.Final")
+          .withProtocolVersion(ProtocolVersion.PROTOCOL_VERSION_20)
           .withCaches("testCache");
 
   @Test

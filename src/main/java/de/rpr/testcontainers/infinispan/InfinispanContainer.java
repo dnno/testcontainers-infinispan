@@ -4,12 +4,16 @@ import com.github.dockerjava.api.command.InspectContainerResponse;
 import org.infinispan.client.hotrod.ProtocolVersion;
 import org.infinispan.client.hotrod.RemoteCacheManager;
 import org.infinispan.client.hotrod.configuration.ConfigurationBuilder;
+import org.infinispan.client.hotrod.exceptions.HotRodClientException;
 import org.junit.runner.Description;
+import org.rnorth.ducttape.Preconditions;
+import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.LogMessageWaitStrategy;
 
 import java.time.Duration;
 import java.util.*;
+import java.util.stream.IntStream;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 
@@ -24,6 +28,7 @@ public class InfinispanContainer extends GenericContainer<InfinispanContainer> {
 
   private static final String IMAGE_NAME = "jboss/infinispan-server";
   public static final String STANDALONE_MODE_CMD = "standalone";
+  private final String infinispanServerVersion;
 
   /*
    * An enumeration of the endpoints provided by Infinispan, that this container provides access to.
@@ -66,6 +71,8 @@ public class InfinispanContainer extends GenericContainer<InfinispanContainer> {
    */
   public InfinispanContainer(final String imageName) {
     super(imageName);
+
+    this.infinispanServerVersion = imageName.split(":")[1];
 
     this.withCommand(STANDALONE_MODE_CMD);
     withExposedPorts(Arrays.stream(InfinispanEndpoints.values()).map(endpoint -> endpoint.protocolPort).toArray(Integer[]::new));
@@ -137,14 +144,32 @@ public class InfinispanContainer extends GenericContainer<InfinispanContainer> {
    * @return The container itself
    */
   public InfinispanContainer withCaches(final Collection<String> cacheNames) {
-    if (incompatibleProtocolVersions.contains(protocolVersion)) {
-      throw new IllegalArgumentException(
-          "You have to use a Hotrod protocol version of 2.0 at least. 1.x can't create caches through the API. " +
-              "You can still map a configuration file into the container using '.withClasspathResourceMapping()'");
+
+    if (isProtocolConflict()) {
+      throw new IllegalArgumentException("Programmatic cache creation only works with Hotrod protocol version >= 2.0!");
     }
+
+    if (isMajorVersionConflict() || isMinorVersionConflict()) {
+      throw new IllegalStateException("Programmatic cache creation only works with InfinispanServer version >= 9.1.0!");
+    }
+
     this.cacheNames = cacheNames;
     return this;
   }
+
+  /**
+   * Links a configuration file for a standalone Infinispan server into the container. The configuration file format needs to match the server version.
+   *
+   * @param filenameFromClasspath The filename containing the standalone configuration.
+   * @return The container itself
+   */
+  public InfinispanContainer withStandaloneConfiguration(final String filenameFromClasspath) {
+    return withClasspathResourceMapping(
+        filenameFromClasspath,
+        "/opt/jboss/infinispan-server/standalone/configuration/standalone.xml",
+        BindMode.READ_ONLY);
+  }
+
 
   @Override
   protected void containerIsStarted(final InspectContainerResponse containerInfo) {
@@ -152,8 +177,18 @@ public class InfinispanContainer extends GenericContainer<InfinispanContainer> {
         .addServers(getHotrodEndpointConnectionString())
         .version(getProtocolVersion())
         .build());
+    if (cacheManager == null) {
+      throw new IllegalStateException("Couldn't instantiate cacheManager");
+    }
+    this.cacheNames.forEach(this::createCache);
+  }
 
-    this.cacheNames.forEach(cacheName -> cacheManager.administration().createCache(cacheName, null));
+  private void createCache(final String cacheName) {
+    try {
+      cacheManager.administration().createCache(cacheName, null);
+    } catch (HotRodClientException e) {
+      logger().error("Couldn't create cache '{}'", cacheName, e);
+    }
   }
 
   @Override
@@ -184,5 +219,22 @@ public class InfinispanContainer extends GenericContainer<InfinispanContainer> {
    */
   public RemoteCacheManager getCacheManager() {
     return cacheManager;
+  }
+
+  private boolean isProtocolConflict() {
+    return incompatibleProtocolVersions.contains(protocolVersion);
+  }
+
+  private boolean isMajorVersionConflict() {
+    return IntStream.range(1, 8)
+        .anyMatch(majorVersion -> infinispanServerVersion.startsWith(Integer.toString(majorVersion)));
+  }
+
+  private boolean isMinorVersionConflict() {
+    boolean minorVersionConflict = false;
+    if (infinispanServerVersion.startsWith("9.0")) {
+      minorVersionConflict = true;
+    }
+    return minorVersionConflict;
   }
 }
