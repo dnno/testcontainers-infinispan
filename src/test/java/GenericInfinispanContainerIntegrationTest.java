@@ -25,7 +25,7 @@ public class GenericInfinispanContainerIntegrationTest {
           .waitingFor(new LogMessageWaitStrategy().withRegEx(".*Infinispan Server.*started in.*\\s"))
           .withStartupTimeout(Duration.ofMillis(20000))
           .withClasspathResourceMapping(
-              "infinispan-standalone.xml",
+              "infinispan-91x-standalone.xml",
               "/opt/jboss/infinispan-server/standalone/configuration/standalone.xml",
               BindMode.READ_ONLY)
           .withCommand("standalone");

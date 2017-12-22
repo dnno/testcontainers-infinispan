@@ -20,7 +20,7 @@ import static java.time.temporal.ChronoUnit.SECONDS;
  * @param <SELF>
  */
 @SuppressWarnings("ALL")
-public class InfinispanContainer<SELF extends InfinispanContainer<SELF>> extends GenericContainer<SELF> {
+public class InfinispanContainer extends GenericContainer<InfinispanContainer> {
 
   private static final String IMAGE_NAME = "jboss/infinispan-server";
   public static final String STANDALONE_MODE_CMD = "standalone";
@@ -48,7 +48,7 @@ public class InfinispanContainer<SELF extends InfinispanContainer<SELF>> extends
   }
 
   private ProtocolVersion protocolVersion;
-  private Collection<String> cacheNames;
+  private Collection<String> cacheNames = new ArrayList<>();
 
   private RemoteCacheManager cacheManager;
 
@@ -72,7 +72,7 @@ public class InfinispanContainer<SELF extends InfinispanContainer<SELF>> extends
 
     this.waitStrategy = new LogMessageWaitStrategy()
         .withRegEx(".*Infinispan Server.*started in.*\\s")
-        .withStartupTimeout(Duration.of(20, SECONDS));
+        .withStartupTimeout(Duration.of(60, SECONDS));
   }
 
   /**
@@ -87,7 +87,7 @@ public class InfinispanContainer<SELF extends InfinispanContainer<SELF>> extends
    * @return The container instance
    */
   @Override
-  public SELF withCommand(String cmd) {
+  public InfinispanContainer withCommand(String cmd) {
     super.setCommand(cmd);
     this.withCommand(ensureStandaloneCommand(getCommandParts()));
     return self();
@@ -100,7 +100,7 @@ public class InfinispanContainer<SELF extends InfinispanContainer<SELF>> extends
    * @return
    */
   @Override
-  public SELF withCommand(String... commandParts) {
+  public InfinispanContainer withCommand(String... commandParts) {
     this.setCommand(ensureStandaloneCommand(commandParts));
     return self();
   }

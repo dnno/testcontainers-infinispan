@@ -5,7 +5,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
 
-public class InfinispanContainerIntegrationTest {
+public class Infinispan91xContainerIntegrationTest {
 
   @ClassRule
   public static InfinispanContainer infinispan = new InfinispanContainer("jboss/infinispan-server:9.1.4.Final")
