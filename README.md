@@ -18,8 +18,7 @@ Here's simple example how you can use the `InfinispanContainer`.
 
 ```
 @ClassRule
-public static InfinispanContainer infinispan = new InfinispanContainer()
-          .withProtocolVersion(ProtocolVersion.PROTOCOL_VERSION_26);
+public static InfinispanContainer infinispan = new InfinispanContainer();
 ```
 ## Cache creation
 
@@ -28,7 +27,7 @@ using the API of the `RemoteCacheManager` provided by the Infinispan client libr
 They will automatically be created once the container has started.
 
 ```
-new InfinispanContainer()
+new InfinispanContainer(‚)
           .withProtocolVersion(ProtocolVersion.PROTOCOL_VERSION_26)
           .withCaches("testCache");
 ``` 
