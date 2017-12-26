@@ -6,16 +6,12 @@ import org.infinispan.client.hotrod.RemoteCacheManager;
 import org.infinispan.client.hotrod.configuration.ConfigurationBuilder;
 import org.infinispan.client.hotrod.exceptions.HotRodClientException;
 import org.junit.runner.Description;
-import org.rnorth.ducttape.Preconditions;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.wait.LogMessageWaitStrategy;
+import org.testcontainers.containers.wait.Wait;
 
-import java.time.Duration;
 import java.util.*;
 import java.util.stream.IntStream;
-
-import static java.time.temporal.ChronoUnit.SECONDS;
 
 /**
  * An implementation of the {@link org.testcontainers.containers.GenericContainer} class that can be
@@ -77,9 +73,7 @@ public class InfinispanContainer extends GenericContainer<InfinispanContainer> {
     this.withCommand(STANDALONE_MODE_CMD);
     withExposedPorts(Arrays.stream(InfinispanEndpoints.values()).map(endpoint -> endpoint.protocolPort).toArray(Integer[]::new));
 
-    this.waitStrategy = new LogMessageWaitStrategy()
-        .withRegEx(".*Infinispan Server.*started in.*\\s")
-        .withStartupTimeout(Duration.of(60, SECONDS));
+    this.waitStrategy = Wait.forListeningPort();
   }
 
   /**
