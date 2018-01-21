@@ -1,17 +1,18 @@
+import de.rpr.testcontainers.infinispan.ClusteredInfinispanContainer;
 import de.rpr.testcontainers.infinispan.InfinispanContainer;
-import de.rpr.testcontainers.infinispan.StandaloneInfinispanContainer;
 import org.infinispan.client.hotrod.ProtocolVersion;
 import org.junit.ClassRule;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
 
-public class Infinispan90xContainerIntegrationTest {
+public class Infinispan91xClusteredContainerIntegrationTest {
 
   @ClassRule
-  public static InfinispanContainer infinispan = new StandaloneInfinispanContainer("jboss/infinispan-server:9.0.3.Final")
-      .withStandaloneConfiguration("infinispan-90x-standalone.xml")
-      .withProtocolVersion(ProtocolVersion.PROTOCOL_VERSION_26);
+  public static InfinispanContainer infinispan =
+      new ClusteredInfinispanContainer("jboss/infinispan-server:9.1.4.Final")
+          .withCaches("testCache")
+          .withProtocolVersion(ProtocolVersion.PROTOCOL_VERSION_20);
 
   @Test
   public void rule_should_have_mapped_hotrod_port() {
