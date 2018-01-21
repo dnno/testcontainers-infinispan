@@ -1,6 +1,6 @@
 package de.rpr.testcontainers.infinispan;
 
-import de.rpr.testcontainers.infinispan.transport.NoTopologyStateTransferTransportFactory;
+import de.rpr.testcontainers.infinispan.transport.DisabledTopologyStateTransferTransportFactory;
 import org.infinispan.client.hotrod.impl.transport.TransportFactory;
 import org.testcontainers.containers.BindMode;
 
@@ -38,7 +38,7 @@ public class ClusteredInfinispanContainer extends InfinispanContainer {
    */
   @Override
   protected Optional<Class<? extends TransportFactory>> getTransportFactory() {
-    return Optional.of(NoTopologyStateTransferTransportFactory.class);
+    return Optional.of(DisabledTopologyStateTransferTransportFactory.class);
   }
 
   /**
