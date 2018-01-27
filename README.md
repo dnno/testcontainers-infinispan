@@ -43,7 +43,7 @@ using the API of the `RemoteCacheManager` provided by the Infinispan client libr
 They will automatically be created once the container has started.
 
 ```
-new StandaloneInfinispanContainer(‚)
+new StandaloneInfinispanContainer()
     .withCaches("testCache")
     .withProtocolVersion(ProtocolVersion.PROTOCOL_VERSION_26);
 ``` 
