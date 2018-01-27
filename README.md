@@ -62,7 +62,7 @@ There's an equivalent for the `ClusteredInfinispanContainer`:
 
 ```
 new ClusteredInfinispanContainer("jboss/infinispan-server:9.0.3.Final")
-    .withClusteredConfiguration("infinispan-standalone.xml")
+    .withClusteredConfiguration("infinispan-clustered.xml")
     .withProtocolVersion(ProtocolVersion.PROTOCOL_VERSION_26)
 ```
 
